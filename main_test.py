@@ -64,33 +64,27 @@ def test_hex_addresses():
 
 @pytest.mark.T3
 def test_stack_grows_down():
-    """T3: output shows stack grows down (requires cross-function comparison)"""
+    """T3: stack addresses decrease (first > last) proving stack grows down"""
     content = load_result()
     addrs = extract_addresses(content, 'STACK')
     assert len(addrs) >= 3, \
         f"STACK: need at least 3 addresses (main local, param, function local), found {len(addrs)}"
     print(f"STACK addresses: {[hex(a) for a in addrs]}")
 
-    # Check program's own comparison output
-    lower = content.lower()
-    has_down = 'stack grows' in lower and 'down' in lower
-    assert has_down, \
-        "Output must show 'Stack grows: DOWN' — compare address from main() vs address in child function"
-    print("PASS: output confirms stack grows down")
+    assert addrs[0] > addrs[-1], \
+        f"Stack should grow down: first addr {hex(addrs[0])} should be > last addr {hex(addrs[-1])}"
+    print(f"PASS: stack grows down — {hex(addrs[0])} > {hex(addrs[-1])} (gap: {addrs[0] - addrs[-1]} bytes)")
 
 
 @pytest.mark.T4
 def test_heap_grows_up():
-    """T4: output shows heap grows up"""
+    """T4: heap addresses increase (first < last) proving heap grows up"""
     content = load_result()
     addrs = extract_addresses(content, 'HEAP')
     assert len(addrs) >= 2, \
         f"HEAP: need at least 2 addresses, found {len(addrs)}"
     print(f"HEAP addresses: {[hex(a) for a in addrs]}")
 
-    # Check program's own comparison output
-    lower = content.lower()
-    has_up = 'heap grows' in lower and 'up' in lower
-    assert has_up, \
-        "Output must show 'Heap grows: UP' — compare addresses of two heap allocations"
-    print("PASS: output confirms heap grows up")
+    assert addrs[0] < addrs[-1], \
+        f"Heap should grow up: first addr {hex(addrs[0])} should be < last addr {hex(addrs[-1])}"
+    print(f"PASS: heap grows up — {hex(addrs[0])} < {hex(addrs[-1])} (gap: {addrs[-1] - addrs[0]} bytes)")

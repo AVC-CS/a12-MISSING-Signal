@@ -1,0 +1,120 @@
+<h2>CS140A12 - Memory Segments: Process Memory Layout in Unix</h2>
+
+<h3>Learning Objectives</h3>
+<ul>
+  <li>Understand the difference between a <strong>program</strong> (file on disk) and a <strong>process</strong> (running in memory)</li>
+  <li>Identify the 5 Unix memory segments: <strong>TEXT, DATA, BSS, HEAP, STACK</strong></li>
+  <li>Print memory addresses and observe segment boundaries</li>
+  <li>Demonstrate that the stack grows <strong>down</strong> and the heap grows <strong>up</strong></li>
+</ul>
+
+<hr>
+
+<h3>Memory Layout</h3>
+<pre style="font-family:'Lucida Console',Monaco,monospace;font-weight:900;color:#cc0000;padding:8px 12px;border:1px solid #ccc;border-radius:4px;line-height:1.5;overflow-x:auto;">
+High Address  0x7fffffff
+
+|  STACK  |   grows down (local vars, function frames)
+|    v    |
+
+|  (free  |
+|  space) |
+
+|    ^    |
+|  HEAP   |   grows up (malloc)
+
+|  BSS    |   uninitialized globals (zeroed by OS)
+
+|  DATA   |   initialized globals/statics
+
+|  TEXT   |   machine code (read-only)
+
+Low Address   0x00000000
+</pre>
+
+<h4>TEXT Segment</h4>
+<p>Compiled machine instructions. Function addresses like <span style="font-family:'Lucida Console',Monaco,monospace;font-weight:900;color:#cc0000;">(void*)&main</span> live here. Read-only.</p>
+
+<h4>DATA Segment</h4>
+<p>Initialized global/static variables: <span style="font-family:'Lucida Console',Monaco,monospace;font-weight:900;color:#cc0000;">int globalVar = 100;</span></p>
+
+<h4>BSS Segment</h4>
+<p>Uninitialized global/static variables: <span style="font-family:'Lucida Console',Monaco,monospace;font-weight:900;color:#cc0000;">int uninitGlobal;</span> &mdash; automatically zeroed by the OS.</p>
+
+<h4>HEAP Segment</h4>
+<p>Dynamic memory from <span style="font-family:'Lucida Console',Monaco,monospace;font-weight:900;color:#cc0000;">malloc</span>. Grows <strong>upward</strong>. Use larger sizes (e.g., 1024) to see sequential growth reliably. <span style="font-family:'Lucida Console',Monaco,monospace;font-weight:900;color:#cc0000;">new</span> with small sizes may not allocate sequentially.</p>
+
+<h4>STACK Segment</h4>
+<p>Local variables and function call frames. Grows <strong>downward</strong>.</p>
+<p><strong>Important:</strong> Comparing two local variables in the <em>same</em> function does NOT reliably show stack growth &mdash; the compiler can reorder them. You must compare across <strong>two function calls</strong> (parent frame vs child frame).</p>
+
+<hr>
+
+<h3>Cross-Function Stack Check</h3>
+<p>The skeleton provides a <span style="font-family:'Lucida Console',Monaco,monospace;font-weight:900;color:#cc0000;">checkStack()</span> function. It receives the address of a local variable from <span style="font-family:'Lucida Console',Monaco,monospace;font-weight:900;color:#cc0000;">main()</span> (parent frame) and compares it with addresses in the child frame:</p>
+<pre style="font-family:'Lucida Console',Monaco,monospace;font-weight:900;color:#cc0000;padding:8px 12px;border:1px solid #ccc;border-radius:4px;line-height:1.5;overflow-x:auto;">void checkStack(int* parentAddr) {
+    int childVar = 0;
+    // Print 3 addresses:
+    // 1. parentAddr value   (main's local — parent frame)
+    // 2. &parentAddr         (param — child frame)
+    // 3. &childVar           (local — child frame)
+    // Compare: parentAddr > &childVar → DOWN
+}</pre>
+<p>You must print all 3 addresses. The test will compare the first and last address values to verify the stack grows downward.</p>
+
+<hr>
+
+<h3>Your Task</h3>
+<p>Fill in the skeleton <span style="font-family:'Lucida Console',Monaco,monospace;font-weight:900;color:#cc0000;">main.cpp</span> TODOs:</p>
+<ol>
+  <li>Declare 2 initialized globals (DATA) and 2 uninitialized globals (BSS)</li>
+  <li>Print 2 function addresses: <span style="font-family:'Lucida Console',Monaco,monospace;font-weight:900;color:#cc0000;">main</span> and <span style="font-family:'Lucida Console',Monaco,monospace;font-weight:900;color:#cc0000;">checkStack</span> (TEXT)</li>
+  <li>Print addresses and values for DATA and BSS variables</li>
+  <li>Declare a local variable in <span style="font-family:'Lucida Console',Monaco,monospace;font-weight:900;color:#cc0000;">main()</span> and call <span style="font-family:'Lucida Console',Monaco,monospace;font-weight:900;color:#cc0000;">checkStack(&amp;yourVar)</span> (STACK)</li>
+  <li>Allocate 2 heap variables with <span style="font-family:'Lucida Console',Monaco,monospace;font-weight:900;color:#cc0000;">malloc(1024)</span> and print their addresses (HEAP) &mdash; the test will compare values to verify heap grows upward</li>
+  <li>Free all heap memory with <span style="font-family:'Lucida Console',Monaco,monospace;font-weight:900;color:#cc0000;">free()</span></li>
+  <li>Write your experimental results as a comment block at the bottom of <span style="font-family:'Lucida Console',Monaco,monospace;font-weight:900;color:#cc0000;">main.cpp</span></li>
+</ol>
+
+<hr>
+
+<h3>What to Submit</h3>
+<p><strong>Commit and push</strong> the following files:</p>
+<ul>
+  <li><span style="font-family:'Lucida Console',Monaco,monospace;font-weight:900;color:#cc0000;">main.cpp</span> &mdash; your completed program with experimental results comment</li>
+  <li><span style="font-family:'Lucida Console',Monaco,monospace;font-weight:900;color:#cc0000;">result.txt</span> &mdash; program output</li>
+</ul>
+<pre style="font-family:'Lucida Console',Monaco,monospace;font-weight:900;color:#cc0000;padding:8px 12px;border:1px solid #ccc;border-radius:4px;line-height:1.5;overflow-x:auto;">g++ -std=c++17 -Wall -Wextra main.cpp -o a.out
+./a.out > result.txt
+git add main.cpp result.txt
+git commit -m "completed memory segments assignment"
+git push</pre>
+
+<hr>
+
+<h3>How to Test Locally</h3>
+<pre style="font-family:'Lucida Console',Monaco,monospace;font-weight:900;color:#cc0000;padding:8px 12px;border:1px solid #ccc;border-radius:4px;line-height:1.5;overflow-x:auto;">g++ -std=c++17 -Wall -Wextra main.cpp -o a.out
+./a.out > result.txt
+pytest -rP</pre>
+
+<hr>
+
+<h3>Grading (100 points)</h3>
+<table border="1" cellpadding="6" cellspacing="0">
+  <tr><th>Test</th><th>Points</th><th>What it checks</th></tr>
+  <tr><td>Compile</td><td>20</td><td><span style="font-family:'Lucida Console',Monaco,monospace;font-weight:900;color:#cc0000;">main.cpp</span> compiles with <span style="font-family:'Lucida Console',Monaco,monospace;font-weight:900;color:#cc0000;">g++ -Wall -Wextra</span></td></tr>
+  <tr><td>T1 &mdash; Segment Labels</td><td>20</td><td><span style="font-family:'Lucida Console',Monaco,monospace;font-weight:900;color:#cc0000;">result.txt</span> contains all 5 labels: TEXT, DATA, BSS, STACK, HEAP</td></tr>
+  <tr><td>T2 &mdash; Hex Addresses</td><td>20</td><td>At least 2 hex addresses per segment (3 for STACK)</td></tr>
+  <tr><td>T3 &mdash; Stack Down</td><td>20</td><td>First stack address &gt; last stack address (proves stack grows down)</td></tr>
+  <tr><td>T4 &mdash; Heap Up</td><td>20</td><td>First heap address &lt; last heap address (proves heap grows up)</td></tr>
+</table>
+
+<hr>
+
+<h3>GitHub Classroom</h3>
+<p><a href="https://classroom.github.com/a/1mz2XMcv">Accept the assignment here</a></p>
+
+<hr>
+
+<h3>Lecture: Understanding Unix Memory Structures</h3>
+<iframe src="https://docs.google.com/document/d/1MCSvoJSOs2Grunw3WtGAcv26SK1qXKFUsjKNfKLHum4/preview" frameborder="0" width="2048" height="2048" allowfullscreen="true" style="max-width:100%;"></iframe>
