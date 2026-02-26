@@ -78,8 +78,13 @@ int main() {
  * EXPERIMENTAL RESULTS:
  * TODO: After running your program, explain what you observed:
  * - Which segment has the lowest addresses?
+ * TEXT segment has the lowest addresses, as it contains the executable code of the program.
  * - Which has the highest?
+ * STACK segment has the highest addresses, as it grows downwards from the top of the memory.
  * - Does stack grow down? How did you verify this?
+ * The stack grews downward (towards lower addresses). This was verified by comparing the addresses of the parent frame (main) and child frame (local variable in checkFrame).
  * - Does heap grow up? How did you verify this?
+ * The heap grews upward (towards higher addresses). This was verified by comparing the addresses of heapVar1 and heapVar2.
  * - What is the gap between HEAP and STACK?
+ * The gap is the unallocated memory space between the highest address of heap and the lowest address of stack.
  */
