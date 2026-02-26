@@ -1,0 +1,32 @@
+=== MEMORY SEGMENT BOUNDARIES ===
+
+--- TEXT SEGMENT (Code) ---
+Address of main: 0x5bb53e7b8397
+Address of helper function: 0x5bb53e7b8209
+
+--- DATA SEGMENT (Initialized Globals) ---
+Address of initializedGlobal1: 0x5bb53e7bb010 Value: 100
+Address of initializedGlobal2: 0x5bb53e7bb014 Value: 200
+
+--- BSS SEGMENT (Uninitialized Globals) ---
+Address of uninitializedGlobal1: 0x5bb53e7bb154 Value: 0
+Address of uninitializedGlobal2: 0x5bb53e7bb158 Value: 0
+
+--- STACK SEGMENT (Cross-function comparison) ---
+Parent address: 0x7fff6c593594
+Parameter address: 0x7fff6c593568
+Child variable address: 0x7fff6c593574
+Stack grows: DOWN (parent frame > child frame)
+
+--- HEAP SEGMENT (Dynamic Allocation) ---
+Address of heapVar1: 0x5bb578d922b0
+Address of heapVar2: 0x5bb578d926c0
+Heap grows: UP
+
+=== RELATIVE POSITION SUMMARY ===
+TEXT (lowest) : 0x5bb53e7b8397
+DATA          : 0x5bb53e7bb010
+BSS           : 0x5bb53e7bb154
+HEAP          : 0x5bb578d922b0
+S T A C K (highest): 0x7fff6c593594
+
